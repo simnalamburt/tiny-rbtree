@@ -20,7 +20,7 @@ static void traverse_inorder(node_t *root, void (*)(data_t data));
 //
 // Test if rbtree works fine
 //
-void per_node(data_t val) { printf("%ld\n", val); }
+static void per_node(data_t val) { printf("%ld\n", val); }
 
 int main() {
   node_t *root = NULL;
@@ -31,28 +31,73 @@ int main() {
 }
 
 
-
 //
-// Insertion
+// Helper functions
 //
-node_t *grandparent(node_t *n) {
+static node_t *grandparent(node_t *n) {
   return n && n->parent ? n->parent->parent : NULL;
 }
 
-node_t *uncle(node_t *n) {
+static node_t *uncle(node_t *n) {
   node_t *g = grandparent(n);
   if (!g) { return NULL; }
 
   return n->parent == g->left ? g->right : g->left;
 }
 
-static void insert_case1(node_t*);
-static void insert_case2(node_t*);
-static void insert_case3(node_t*);
-static void insert_case4(node_t*);
-static void insert_case5(node_t*);
-static void rotate_left(node_t*);
-static void rotate_right(node_t*);
+static node_t *sibling(node_t *n) {
+  return n == n->parent->left ? n->parent->right : n->parent->left;
+}
+
+static void rotate_left(node_t *n) {
+  node_t *c = n->right;
+  node_t *p = n->parent;
+
+  if (c->left != NULL) {
+    c->left->parent = n;
+  }
+
+  n->right = c->left;
+  n->parent = c;
+  c->left = n;
+  c->parent = p;
+
+  if (p != NULL) {
+    if (p->left == n) {
+      p->left = c;
+    } else {
+      p->right = c;
+    }
+  }
+}
+
+static void rotate_right(node_t *n) {
+  node_t *c = n->left;
+  node_t *p = n->parent;
+
+  if (c->right != NULL) {
+    c->right->parent = n;
+  }
+
+  n->left = c->right;
+  n->parent = c;
+  c->right = n;
+  c->parent = p;
+
+  if (p != NULL) {
+    if (p->right == n) {
+      p->right = c;
+    } else {
+      p->left = c;
+    }
+  }
+}
+
+
+//
+// Insert
+//
+static void insert_rec(node_t*);
 
 void insert(node_t **root, data_t data) {
   // Allocate memory for a new node
@@ -82,7 +127,7 @@ void insert(node_t **root, data_t data) {
   }
 
   // Fixup red-black tree
-  insert_case1(z);
+  insert_rec(z);
 
   // Correct root node's position
   while ((*root)->parent) {
@@ -90,41 +135,29 @@ void insert(node_t **root, data_t data) {
   }
 }
 
-void insert_case1(struct node *n)
-{
-  if (n->parent == NULL)
+void insert_rec(node_t *n) {
+  // Case 1
+  if (n->parent == NULL) {
     n->color = BLACK;
-  else
-    insert_case2(n);
-}
+    return;
+  }
 
-void insert_case2(struct node *n)
-{
-  if (n->parent->color == BLACK)
-    return; /* Tree is still valid */
-  else
-    insert_case3(n);
-}
+  // Case 2
+  if (n->parent->color == BLACK) { return; }
 
-void insert_case3(struct node *n)
-{
-  struct node *u = uncle(n), *g;
-
+  // Case 3
+  node_t *u = uncle(n);
   if ((u != NULL) && (u->color == RED)) {
     n->parent->color = BLACK;
     u->color = BLACK;
-    g = grandparent(n);
+    node_t *g = grandparent(n);
     g->color = RED;
-    insert_case1(g);
-  } else {
-    insert_case4(n);
+    insert_rec(g);
+    return;
   }
-}
 
-void insert_case4(struct node *n)
-{
-  struct node *g = grandparent(n);
-
+  // Case 4
+  node_t *g = grandparent(n);
   if ((n == n->parent->right) && (n->parent == g->left)) {
     rotate_left(n->parent);
     n = n->left;
@@ -132,66 +165,15 @@ void insert_case4(struct node *n)
     rotate_right(n->parent);
     n = n->right;
   }
-  insert_case5(n);
-}
 
-void insert_case5(struct node *n)
-{
-  struct node *g = grandparent(n);
-
+  // Case 5
   n->parent->color = BLACK;
+  g = grandparent(n);
   g->color = RED;
-  if (n == n->parent->left)
+  if (n == n->parent->left) {
     rotate_right(g);
-  else
+  } else {
     rotate_left(g);
-}
-
-//
-// Helper functions
-//
-void rotate_left(node_t *n) {
-  node_t *c = n->right;
-  node_t *p = n->parent;
-
-  if (c->left != NULL) {
-    c->left->parent = n;
-  }
-
-  n->right = c->left;
-  n->parent = c;
-  c->left = n;
-  c->parent = p;
-
-  if (p != NULL) {
-    if (p->left == n) {
-      p->left = c;
-    } else {
-      p->right = c;
-    }
-  }
-}
-
-
-void rotate_right(node_t *n) {
-  node_t *c = n->left;
-  node_t *p = n->parent;
-
-  if (c->right != NULL) {
-    c->right->parent = n;
-  }
-
-  n->left = c->right;
-  n->parent = c;
-  c->right = n;
-  c->parent = p;
-
-  if (p != NULL) {
-    if (p->right == n) {
-      p->right = c;
-    } else {
-      p->left = c;
-    }
   }
 }
 
