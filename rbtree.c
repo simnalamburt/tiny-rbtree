@@ -1,42 +1,51 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdint.h>
+#include <stdbool.h>
 
 
 //
 // Node of red-black tree
 //
-typedef enum { red, black } color;
+typedef uint32_t data_t;
+typedef enum { red, black } color_t;
 typedef struct node {
-  int data;
-  color color;
+  data_t data;
+  color_t color;
   struct node *left, *right, *parent;
 } node_t;
 
-static void insert(node_t **root, int data);
-static void traverse_inorder(node_t *root, void (*)(int data));
+static void insert(node_t **root, data_t data);
+static void traverse_inorder(node_t *root, void (*)(data_t data));
 
 
 //
 // Test if rbtree works fine
 //
-void per_data(int data) { printf(" %d", data); }
+void test(data_t val) {
+  static uint32_t prev = 0;
+
+  if (prev > val) {
+    fputs("Test failed!", stderr);
+    exit(1);
+  }
+
+  prev = val;
+  printf(" %d", val);
+}
 
 int main() {
+  FILE *input = fopen("fixtures/test00", "r");
   node_t *root = NULL;
-  insert(&root, 5);
-  insert(&root, 3);
-  insert(&root, 7);
-  insert(&root, 2);
-  insert(&root, 4);
-  insert(&root, 6);
-  insert(&root, 8);
-  insert(&root, 11);
 
-  // Expected output: 2 3 4 5 6 7 8 11
+  uint32_t val;
+  while(fscanf(input, "%u", &val) != EOF) {
+    insert(&root, val);
+  }
+
   printf("inorder Traversal Is :");
-  traverse_inorder(root, per_data);
-  puts("");
-
+  traverse_inorder(root, test);
+  putchar('\n');
   return 0;
 }
 
@@ -45,7 +54,7 @@ int main() {
 //
 // Insertion
 //
-void insert(node_t **root, int data) {
+void insert(node_t **root, data_t data) {
   // Allocate memory for a new node
   node_t *z = malloc(sizeof(node_t));
   z->data = data;
@@ -104,7 +113,7 @@ void insert(node_t **root, int data) {
       //
       // 1. Swap color of parent and grandparent
       // 2. Right Rotate Grandparent
-      color c = z->parent->color ;
+      color_t c = z->parent->color ;
       z->parent->color = z->parent->parent->color;
       z->parent->parent->color = c;
       rotate_right(z->parent->parent);
@@ -116,7 +125,7 @@ void insert(node_t **root, int data) {
       // 1. Swap color of current node  and grandparent
       // 2. Left Rotate Parent
       // 3. Right Rotate Grand Parent
-      color c = z->color;
+      color_t c = z->color;
       z->color = z->parent->parent->color;
       z->parent->parent->color = c;
       rotate_left(z->parent);
@@ -128,7 +137,7 @@ void insert(node_t **root, int data) {
       //
       // 1. Swap color of parent and grandparent
       // 2. Left Rotate Grandparent
-      color c = z->parent->color;
+      color_t c = z->parent->color;
       z->parent->color = z->parent->parent->color;
       z->parent->parent->color = c;
       rotate_left(z->parent->parent);
@@ -140,7 +149,7 @@ void insert(node_t **root, int data) {
       // 1. Swap color of current node  and grandparent
       // 2. Right Rotate Parent
       // 3. Left Rotate Grand Parent
-      color c = z->color;
+      color_t c = z->color;
       z->color = z->parent->parent->color;
       z->parent->parent->color = c;
       rotate_right(z->parent);
@@ -197,7 +206,7 @@ void rotate_right(node_t *node) {
 //
 // Traverse arbitrary binary tree in inorder fashion
 //
-void traverse_inorder(node_t *node, void (*func)(int data)) {
+void traverse_inorder(node_t *node, void (*func)(data_t data)) {
   if (!node) { return; }
 
   traverse_inorder(node->left, func);
