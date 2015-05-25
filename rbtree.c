@@ -88,18 +88,18 @@ void insert(node_t **root, int data) {
 
   // Iterate until z is not a root, and z's parent color is red
   while (z != *root && z->parent->color == red) {
-    // Find uncle and store uncle in y
-    node_t *y = z->parent == z->parent->parent->left ?
+    // Find uncle
+    node_t *uncle = z->parent == z->parent->parent->left ?
       z->parent->parent->right :
       z->parent->parent->left;
 
-    if (y->color == red) {
+    if (uncle->color == red) {
       // If uncle is RED
       //
       // 1. Change color of parent and uncle as BLACK
       // 2. Change color of grandparent as RED
       // 3. Move z to grandparent
-      y->color = black;
+      uncle->color = black;
       z->parent->color = black;
       z->parent->parent->color = red;
       z = z->parent->parent;
