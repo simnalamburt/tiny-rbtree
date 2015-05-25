@@ -42,13 +42,18 @@ int main() {
     FILE *input = fopen(names[i], "r");
     node_t *root = NULL;
 
+    printf("Inserted:");
     uint32_t val;
     while(fscanf(input, "%u", &val) != EOF) {
+      printf(" %d", val);
+      fflush(stdout);
       insert(&root, val);
     }
+    putchar('\n');
 
-    printf("inorder Traversal Is :");
+    printf("Stored:  ");
     traverse_inorder(root, test);
+    putchar('\n');
     putchar('\n');
   }
   return 0;
