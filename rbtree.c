@@ -35,17 +35,22 @@ void test(data_t val) {
 }
 
 int main() {
-  FILE *input = fopen("fixtures/test00", "r");
-  node_t *root = NULL;
+  char names[][128] = { "fixtures/test00", "fixtures/test01" };
 
-  uint32_t val;
-  while(fscanf(input, "%u", &val) != EOF) {
-    insert(&root, val);
+  size_t i;
+  for (i = 0; i < 2; ++i) {
+    FILE *input = fopen(names[i], "r");
+    node_t *root = NULL;
+
+    uint32_t val;
+    while(fscanf(input, "%u", &val) != EOF) {
+      insert(&root, val);
+    }
+
+    printf("inorder Traversal Is :");
+    traverse_inorder(root, test);
+    putchar('\n');
   }
-
-  printf("inorder Traversal Is :");
-  traverse_inorder(root, test);
-  putchar('\n');
   return 0;
 }
 
