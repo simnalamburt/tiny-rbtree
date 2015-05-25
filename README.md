@@ -6,6 +6,11 @@ make
 ./bin
 ```
 
+### Test
+```sh
+make test
+```
+
 ### Debugging
 ```sh
 make debug

@@ -1,0 +1,23 @@
+#!/usr/bin/env ruby
+Dir.chdir(File.dirname(__FILE__))
+
+dir = 'fixtures'
+Dir.foreach(dir) do |item|
+  next if item == '.' or item == '..'
+  file = "#{dir}/#{item}"
+
+  print "#{item}: "
+  expect = open(file).read.chomp.split.map(&:to_i).sort.join("\n") + "\n"
+  actual = `../bin < #{file}`
+  puts expect == actual ? "\e[32mOK\e[0m" : "\e[31mFailed\e[0m"
+
+  if expect != actual
+    puts ''
+    puts 'Expect:'
+    p expect
+    puts ''
+    puts 'Actual:'
+    p actual
+    puts ''
+  end
+end
