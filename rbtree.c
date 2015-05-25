@@ -42,6 +42,8 @@ int main() {
 
 
 
+static node *grandparent(node *n);
+static node *uncle(node *n);
 static void rotate_left(node**, node*);
 static void rotate_right(node**, node*);
 
@@ -64,20 +66,20 @@ void insert(node **root, int data) {
 
 
   //
-  // Standard BST insertion steps
+  // Standard BST insertion
   //
   node *y, *x = (*root);
   while (x != NULL) {
     y = x;
     x = (z->data < x->data) ? x->left : x->right;
   }
+  z->color = red;
   z->parent = y;
   if (z->data > y->data) {
     y->right = z;
   } else {
     y->left = z;
   }
-  z->color = red;
 
 
   //
@@ -160,8 +162,22 @@ void insert(node **root, int data) {
 
 
 //
-// Left rotation
+// Helper functions
 //
+node *grandparent(node *n) {
+  if (n == NULL || n->parent == NULL) { return NULL; }
+
+  return n->parent->parent;
+}
+
+node *uncle(node *n) {
+  node *g = grandparent(n);
+  if (g == NULL) { return NULL; }
+
+  return n->parent == g->left ? g->right : g->left;
+}
+
+
 void rotate_left(node **root, node *x) {
   // Variable 'y' stores the address x's right child
   node *y = x->right;
@@ -195,9 +211,6 @@ void rotate_left(node **root, node *x) {
 }
 
 
-//
-// Right rotation (mirror of rotate_left)
-//
 void rotate_right(node **root, node *y) {
   node *x = y->left;
   y->left = x->right;
