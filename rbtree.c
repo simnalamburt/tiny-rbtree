@@ -44,7 +44,7 @@ int main() {
 
 static node *grandparent(node *n);
 static node *uncle(node *n);
-static void rotate_left(node**, node*);
+static void rotate_left(node*);
 static void rotate_right(node**, node*);
 
 
@@ -126,7 +126,7 @@ void insert(node **root, int data) {
         color c = z->color;
         z->color = z->parent->parent->color;
         z->parent->parent->color = c;
-        rotate_left(root, z->parent);
+        rotate_left(z->parent);
         rotate_right(root, z->parent->parent);
       }
 
@@ -138,7 +138,7 @@ void insert(node **root, int data) {
         color c = z->parent->color;
         z->parent->color = z->parent->parent->color;
         z->parent->parent->color = c;
-        rotate_left(root, z->parent->parent);
+        rotate_left(z->parent->parent);
       }
 
       if (z->parent == z->parent->parent->right && z == z->parent->left) {
@@ -151,7 +151,7 @@ void insert(node **root, int data) {
         z->color = z->parent->parent->color;
         z->parent->parent->color = c;
         rotate_right(root, z->parent);
-        rotate_left(root, z->parent->parent);
+        rotate_left(z->parent->parent);
       }
     }
   }
@@ -178,36 +178,21 @@ node *uncle(node *n) {
 }
 
 
-void rotate_left(node **root, node *x) {
-  // Variable 'y' stores the address x's right child
-  node *y = x->right;
+void rotate_left(node *node) {
+  struct node *child = node->right;
+  node->right = child->left;
 
-  // Store y's left subtree's pointer as x's right child
-  x->right = y->left;
-
-  // Update parent pointer of x's right
-  if (x->right != NULL) {
-    x->right->parent = x;
+  if (node->right != NULL) {
+    node->right->parent = node;
   }
-
-  // Update y's parent pointer
-  y->parent = x->parent;
-
-  // If x's parent is null, make y as root of tree
-  // Otherwise, store y at the place of x
-  if (x->parent == NULL) {
-    *root = y;
-  } else if (x == x->parent->left) {
-    x->parent->left = y;
+  child->parent = node->parent;
+  if (node == node->parent->left) {
+    node->parent->left = child;
   } else {
-    x->parent->right = y;
+    node->parent->right = child;
   }
-
-  // Make x as left child of y
-  y->left = x;
-
-  // Update parent pointer of x
-  x->parent = y;
+  child->left = node;
+  node->parent = child;
 }
 
 
