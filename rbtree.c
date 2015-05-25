@@ -179,41 +179,49 @@ void insert_case5(struct node *n)
 //
 // Helper functions
 //
-void rotate_left(node_t *node) {
-  node_t *child = node->right;
-  node->right = child->left;
+void rotate_left(node_t *n) {
+  node_t *c = n->right;
+  node_t *p = n->parent;
 
-  if (node->right != NULL) {
-    node->right->parent = node;
+  if (c->left != NULL) {
+    c->left->parent = n;
   }
-  child->parent = node->parent;
 
-  if (node == node->parent->left) {
-    node->parent->left = child;
-  } else {
-    node->parent->right = child;
+  n->right = c->left;
+  n->parent = c;
+  c->left = n;
+  c->parent = p;
+
+  if (p != NULL) {
+    if (p->left == n) {
+      p->left = c;
+    } else {
+      p->right = c;
+    }
   }
-  child->left = node;
-  node->parent = child;
 }
 
 
-void rotate_right(node_t *node) {
-  node_t *child = node->left;
-  node->left = child->right;
+void rotate_right(node_t *n) {
+  node_t *c = n->left;
+  node_t *p = n->parent;
 
-  if (node->left != NULL) {
-    node->left->parent = node;
+  if (c->right != NULL) {
+    c->right->parent = n;
   }
-  child->parent = node->parent;
 
-  if (node == node->parent->left) {
-    node->parent->left = child;
-  } else {
-    node->parent->right = child;
+  n->left = c->right;
+  n->parent = c;
+  c->right = n;
+  c->parent = p;
+
+  if (p != NULL) {
+    if (p->right == n) {
+      p->right = c;
+    } else {
+      p->left = c;
+    }
   }
-  child->right = node;
-  node->parent = child;
 }
 
 
