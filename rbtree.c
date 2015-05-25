@@ -45,7 +45,7 @@ int main() {
 static node_t *grandparent(node_t *n);
 static node_t *uncle(node_t *n);
 static void rotate_left(node_t*);
-static void rotate_right(node_t**, node_t*);
+static void rotate_right(node_t*);
 
 
 //
@@ -114,7 +114,7 @@ void insert(node_t **root, int data) {
         color c = z->parent->color ;
         z->parent->color = z->parent->parent->color;
         z->parent->parent->color = c;
-        rotate_right(root, z->parent->parent);
+        rotate_right(z->parent->parent);
       }
 
       if (z->parent == z->parent->parent->left && z == z->parent->right) {
@@ -127,7 +127,7 @@ void insert(node_t **root, int data) {
         z->color = z->parent->parent->color;
         z->parent->parent->color = c;
         rotate_left(z->parent);
-        rotate_right(root, z->parent->parent);
+        rotate_right(z->parent->parent);
       }
 
       if (z->parent == z->parent->parent->right && z == z->parent->right) {
@@ -150,7 +150,7 @@ void insert(node_t **root, int data) {
         color c = z->color;
         z->color = z->parent->parent->color;
         z->parent->parent->color = c;
-        rotate_right(root, z->parent);
+        rotate_right(z->parent);
         rotate_left(z->parent->parent);
       }
     }
@@ -186,6 +186,7 @@ void rotate_left(node_t *node) {
     node->right->parent = node;
   }
   child->parent = node->parent;
+
   if (node == node->parent->left) {
     node->parent->left = child;
   } else {
@@ -196,22 +197,22 @@ void rotate_left(node_t *node) {
 }
 
 
-void rotate_right(node_t **root, node_t *y) {
-  node_t *x = y->left;
-  y->left = x->right;
-  if (x->right != NULL) {
-    x->right->parent = y;
+void rotate_right(node_t *node) {
+  node_t *child = node->left;
+  node->left = child->right;
+
+  if (node->left != NULL) {
+    node->left->parent = node;
   }
-  x->parent =y->parent;
-  if (x->parent == NULL) {
-    (*root) = x;
-  } else if (y == y->parent->left) {
-    y->parent->left = x;
+  child->parent = node->parent;
+
+  if (node == node->parent->left) {
+    node->parent->left = child;
   } else {
-    y->parent->right = x;
+    node->parent->right = child;
   }
-  x->right = y;
-  y->parent = x;
+  child->right = node;
+  node->parent = child;
 }
 
 
