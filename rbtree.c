@@ -87,68 +87,64 @@ void insert(node_t **root, int data) {
       z->parent->parent->right :
       z->parent->parent->left;
 
+    // Check if the uncle is RED
     if (uncle->color == red) {
-      // If uncle is RED
-      //
-      // 1. Change color of parent and uncle as BLACK
-      // 2. Change color of grandparent as RED
-      // 3. Move z to grandparent
-      uncle->color = black;
-      z->parent->color = black;
+      z->parent->color = uncle->color = black;
       z->parent->parent->color = red;
       z = z->parent->parent;
-    } else {
-      // Otherwise, there are four cases; LL, LR, RL and RR
-      void rotate_left(node_t*);
-      void rotate_right(node_t*);
+      continue;
+    }
 
-      if (z->parent == z->parent->parent->left && z == z->parent->left) {
-        // On Left-Left (LL) case
-        //
-        // 1. Swap color of parent and grandparent
-        // 2. Right Rotate Grandparent
-        color c = z->parent->color ;
-        z->parent->color = z->parent->parent->color;
-        z->parent->parent->color = c;
-        rotate_right(z->parent->parent);
-      }
+    // Otherwise, there are four cases; LL, LR, RL and RR
+    void rotate_left(node_t*);
+    void rotate_right(node_t*);
 
-      if (z->parent == z->parent->parent->left && z == z->parent->right) {
-        // On Left-Right (LR) case
-        //
-        // 1. Swap color of current node  and grandparent
-        // 2. Left Rotate Parent
-        // 3. Right Rotate Grand Parent
-        color c = z->color;
-        z->color = z->parent->parent->color;
-        z->parent->parent->color = c;
-        rotate_left(z->parent);
-        rotate_right(z->parent->parent);
-      }
+    if (z->parent == z->parent->parent->left && z == z->parent->left) {
+      // On Left-Left (LL) case
+      //
+      // 1. Swap color of parent and grandparent
+      // 2. Right Rotate Grandparent
+      color c = z->parent->color ;
+      z->parent->color = z->parent->parent->color;
+      z->parent->parent->color = c;
+      rotate_right(z->parent->parent);
+    }
 
-      if (z->parent == z->parent->parent->right && z == z->parent->right) {
-        // On Right-Right (RR) case
-        //
-        // 1. Swap color of parent and grandparent
-        // 2. Left Rotate Grandparent
-        color c = z->parent->color;
-        z->parent->color = z->parent->parent->color;
-        z->parent->parent->color = c;
-        rotate_left(z->parent->parent);
-      }
+    if (z->parent == z->parent->parent->left && z == z->parent->right) {
+      // On Left-Right (LR) case
+      //
+      // 1. Swap color of current node  and grandparent
+      // 2. Left Rotate Parent
+      // 3. Right Rotate Grand Parent
+      color c = z->color;
+      z->color = z->parent->parent->color;
+      z->parent->parent->color = c;
+      rotate_left(z->parent);
+      rotate_right(z->parent->parent);
+    }
 
-      if (z->parent == z->parent->parent->right && z == z->parent->left) {
-        // On Right-Left (RL) case
-        //
-        // 1. Swap color of current node  and grandparent
-        // 2. Right Rotate Parent
-        // 3. Left Rotate Grand Parent
-        color c = z->color;
-        z->color = z->parent->parent->color;
-        z->parent->parent->color = c;
-        rotate_right(z->parent);
-        rotate_left(z->parent->parent);
-      }
+    if (z->parent == z->parent->parent->right && z == z->parent->right) {
+      // On Right-Right (RR) case
+      //
+      // 1. Swap color of parent and grandparent
+      // 2. Left Rotate Grandparent
+      color c = z->parent->color;
+      z->parent->color = z->parent->parent->color;
+      z->parent->parent->color = c;
+      rotate_left(z->parent->parent);
+    }
+
+    if (z->parent == z->parent->parent->right && z == z->parent->left) {
+      // On Right-Left (RL) case
+      //
+      // 1. Swap color of current node  and grandparent
+      // 2. Right Rotate Parent
+      // 3. Left Rotate Grand Parent
+      color c = z->color;
+      z->color = z->parent->parent->color;
+      z->parent->parent->color = c;
+      rotate_right(z->parent);
+      rotate_left(z->parent->parent);
     }
   }
 
