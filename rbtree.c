@@ -22,40 +22,13 @@ static void traverse_inorder(node_t *root, void (*)(data_t data));
 //
 // Test if rbtree works fine
 //
-static uint32_t prev = 0;
-void test(data_t val) {
-  if (prev > val) {
-    fprintf(stderr, "Test failed! (prev: %d, current: %d)", prev, val);
-    exit(1);
-  }
-
-  prev = val;
-  printf(" %d", val);
-}
+void per_node(data_t val) { printf("%d\n", val); }
 
 int main() {
-  char names[][128] = { "fixtures/test00", "fixtures/test01", "fixtures/test02" };
-
-  size_t i;
-  for (i = 0; i < sizeof names/sizeof names[0]; ++i) {
-    FILE *input = fopen(names[i], "r");
-    node_t *root = NULL;
-
-    printf("Inserted:");
-    uint32_t val;
-    while(fscanf(input, "%u", &val) != EOF) {
-      printf(" %d", val);
-      fflush(stdout);
-      insert(&root, val);
-    }
-    putchar('\n');
-
-    printf("Stored:  ");
-    prev = 0;
-    traverse_inorder(root, test);
-    putchar('\n');
-    putchar('\n');
-  }
+  node_t *root = NULL;
+  uint32_t val;
+  while(scanf("%u", &val) != EOF) { insert(&root, val); }
+  traverse_inorder(root, per_node);
   return 0;
 }
 
