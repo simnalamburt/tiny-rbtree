@@ -62,12 +62,11 @@ static void rotate_left(node_t *n) {
   c->left = n;
   c->parent = p;
 
-  if (p != NULL) {
-    if (p->left == n) {
-      p->left = c;
-    } else {
-      p->right = c;
-    }
+  if (p == NULL) { return; }
+  if (p->left == n) {
+    p->left = c;
+  } else {
+    p->right = c;
   }
 }
 
@@ -84,12 +83,11 @@ static void rotate_right(node_t *n) {
   c->right = n;
   c->parent = p;
 
-  if (p != NULL) {
-    if (p->right == n) {
-      p->right = c;
-    } else {
-      p->left = c;
-    }
+  if (p == NULL) { return; }
+  if (p->left == n) {
+    p->left = c;
+  } else {
+    p->right = c;
   }
 }
 
