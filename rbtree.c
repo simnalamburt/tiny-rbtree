@@ -42,12 +42,6 @@ int main() {
 
 
 
-static node_t *grandparent(node_t *n);
-static node_t *uncle(node_t *n);
-static void rotate_left(node_t*);
-static void rotate_right(node_t*);
-
-
 //
 // Insertion
 //
@@ -105,6 +99,8 @@ void insert(node_t **root, int data) {
       z = z->parent->parent;
     } else {
       // Otherwise, there are four cases; LL, LR, RL and RR
+      void rotate_left(node_t*);
+      void rotate_right(node_t*);
 
       if (z->parent == z->parent->parent->left && z == z->parent->left) {
         // On Left-Left (LL) case
@@ -164,20 +160,6 @@ void insert(node_t **root, int data) {
 //
 // Helper functions
 //
-node_t *grandparent(node_t *n) {
-  if (n == NULL || n->parent == NULL) { return NULL; }
-
-  return n->parent->parent;
-}
-
-node_t *uncle(node_t *n) {
-  node_t *g = grandparent(n);
-  if (g == NULL) { return NULL; }
-
-  return n->parent == g->left ? g->right : g->left;
-}
-
-
 void rotate_left(node_t *node) {
   node_t *child = node->right;
   node->right = child->left;
