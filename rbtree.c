@@ -96,9 +96,7 @@ void insert(node_t **root, data_t data) {
     return;
   }
 
-  //
   // Standard BST insertion
-  //
   node_t *y, *x = (*root);
   while (x != NULL) {
     y = x;
@@ -112,7 +110,13 @@ void insert(node_t **root, data_t data) {
     y->right = z;
   }
 
+  // Fixup red-black tree
   insert_case1(z);
+
+  // Correct root node's position
+  while ((*root)->parent) {
+    *root = (*root)->parent;
+  }
 }
 
 void insert_case1(struct node *n)
