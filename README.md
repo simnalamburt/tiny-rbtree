@@ -6,4 +6,10 @@ make
 ./bin
 ```
 
+### Debugging
+```sh
+make debug
+gdb ./bin
+```
+
 [GeeksQuiz]: http://geeksquiz.com/c-program-red-black-tree-insertion

@@ -35,10 +35,10 @@ void test(data_t val) {
 }
 
 int main() {
-  char names[][128] = { "fixtures/test00", "fixtures/test01" };
+  char names[][128] = { "fixtures/test00", "fixtures/test01", "fixtures/test02" };
 
   size_t i;
-  for (i = 0; i < 2; ++i) {
+  for (i = 0; i < sizeof names/sizeof names[0]; ++i) {
     FILE *input = fopen(names[i], "r");
     node_t *root = NULL;
 
