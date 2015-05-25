@@ -22,11 +22,10 @@ static void traverse_inorder(node_t *root, void (*)(data_t data));
 //
 // Test if rbtree works fine
 //
+static uint32_t prev = 0;
 void test(data_t val) {
-  static uint32_t prev = 0;
-
   if (prev > val) {
-    fputs("Test failed!", stderr);
+    fprintf(stderr, "Test failed! (prev: %d, current: %d)", prev, val);
     exit(1);
   }
 
@@ -52,6 +51,7 @@ int main() {
     putchar('\n');
 
     printf("Stored:  ");
+    prev = 0;
     traverse_inorder(root, test);
     putchar('\n');
     putchar('\n');
