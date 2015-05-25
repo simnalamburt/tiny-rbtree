@@ -1,13 +1,11 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <stdint.h>
-#include <stdbool.h>
 
 
 //
 // Node of red-black tree
 //
-typedef uint32_t data_t;
+typedef long data_t;
 typedef enum { RED, BLACK } color_t;
 typedef struct node {
   data_t data;
@@ -22,12 +20,12 @@ static void traverse_inorder(node_t *root, void (*)(data_t data));
 //
 // Test if rbtree works fine
 //
-void per_node(data_t val) { printf("%d\n", val); }
+void per_node(data_t val) { printf("%ld\n", val); }
 
 int main() {
   node_t *root = NULL;
-  uint32_t val;
-  while(scanf("%u", &val) != EOF) { insert(&root, val); }
+  long val;
+  while(scanf("%ld", &val) != EOF) { insert(&root, val); }
   traverse_inorder(root, per_node);
   return 0;
 }
