@@ -10,10 +10,10 @@ typedef struct node {
   int data;
   color color;
   struct node *left, *right, *parent;
-} node;
+} node_t;
 
-static void insert(node **root, int data);
-static void traverse_inorder(node *root, void (*)(int data));
+static void insert(node_t **root, int data);
+static void traverse_inorder(node_t *root, void (*)(int data));
 
 
 //
@@ -22,7 +22,7 @@ static void traverse_inorder(node *root, void (*)(int data));
 void per_data(int data) { printf(" %d", data); }
 
 int main() {
-  node *root = NULL;
+  node_t *root = NULL;
   insert(&root, 5);
   insert(&root, 3);
   insert(&root, 7);
@@ -42,18 +42,18 @@ int main() {
 
 
 
-static node *grandparent(node *n);
-static node *uncle(node *n);
-static void rotate_left(node*);
-static void rotate_right(node**, node*);
+static node_t *grandparent(node_t *n);
+static node_t *uncle(node_t *n);
+static void rotate_left(node_t*);
+static void rotate_right(node_t**, node_t*);
 
 
 //
 // Insertion
 //
-void insert(node **root, int data) {
+void insert(node_t **root, int data) {
   // Allocate memory for a new node
-  node *z = malloc(sizeof(node));
+  node_t *z = malloc(sizeof(node_t));
   z->data = data;
   z->left = z->right = z->parent = NULL;
 
@@ -68,7 +68,7 @@ void insert(node **root, int data) {
   //
   // Standard BST insertion
   //
-  node *y, *x = (*root);
+  node_t *y, *x = (*root);
   while (x != NULL) {
     y = x;
     x = (z->data < x->data) ? x->left : x->right;
@@ -89,7 +89,7 @@ void insert(node **root, int data) {
   // Iterate until z is not a root, and z's parent color is red
   while (z != *root && z->parent->color == red) {
     // Find uncle and store uncle in y
-    node *y = z->parent == z->parent->parent->left ?
+    node_t *y = z->parent == z->parent->parent->left ?
       z->parent->parent->right :
       z->parent->parent->left;
 
@@ -164,22 +164,22 @@ void insert(node **root, int data) {
 //
 // Helper functions
 //
-node *grandparent(node *n) {
+node_t *grandparent(node_t *n) {
   if (n == NULL || n->parent == NULL) { return NULL; }
 
   return n->parent->parent;
 }
 
-node *uncle(node *n) {
-  node *g = grandparent(n);
+node_t *uncle(node_t *n) {
+  node_t *g = grandparent(n);
   if (g == NULL) { return NULL; }
 
   return n->parent == g->left ? g->right : g->left;
 }
 
 
-void rotate_left(node *node) {
-  struct node *child = node->right;
+void rotate_left(node_t *node) {
+  node_t *child = node->right;
   node->right = child->left;
 
   if (node->right != NULL) {
@@ -196,8 +196,8 @@ void rotate_left(node *node) {
 }
 
 
-void rotate_right(node **root, node *y) {
-  node *x = y->left;
+void rotate_right(node_t **root, node_t *y) {
+  node_t *x = y->left;
   y->left = x->right;
   if (x->right != NULL) {
     x->right->parent = y;
@@ -218,7 +218,7 @@ void rotate_right(node **root, node *y) {
 //
 // Traverse arbitrary binary tree in inorder fashion
 //
-void traverse_inorder(node *node, void (*func)(int data)) {
+void traverse_inorder(node_t *node, void (*func)(int data)) {
   if (!node) { return; }
 
   traverse_inorder(node->left, func);
