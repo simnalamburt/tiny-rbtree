@@ -5,9 +5,10 @@
 //
 // Node of red-black tree
 //
+typedef enum { red, black } color;
 typedef struct node {
   int data;
-  char color;
+  color color;
   struct node *left, *right, *parent;
 } node;
 
@@ -18,7 +19,7 @@ static void traverse_inorder(node *root, void (*)(int data));
 //
 // Test if rbtree works fine
 //
-void per_data(int data) { printf("%d ", data); }
+void per_data(int data) { printf(" %d", data); }
 
 int main() {
   node *root = NULL;
@@ -32,7 +33,7 @@ int main() {
   insert(&root, 11);
 
   // Expected output: 2 3 4 5 6 7 8 11
-  printf("inorder Traversal Is : ");
+  printf("inorder Traversal Is :");
   traverse_inorder(root, per_data);
   puts("");
 
@@ -56,7 +57,7 @@ void insert(node **root, int data) {
 
   // If root is NULL, set z as root and return
   if (*root == NULL) {
-    z->color = 'B';
+    z->color = black;
     (*root) = z;
     return;
   }
@@ -76,7 +77,7 @@ void insert(node **root, int data) {
   } else {
     y->left = z;
   }
-  z->color = 'R';
+  z->color = red;
 
 
   //
@@ -84,21 +85,21 @@ void insert(node **root, int data) {
   //
 
   // Iterate until z is not a root, and z's parent color is red
-  while (z != *root && z->parent->color == 'R') {
+  while (z != *root && z->parent->color == red) {
     // Find uncle and store uncle in y
     node *y = z->parent == z->parent->parent->left ?
       z->parent->parent->right :
       z->parent->parent->left;
 
-    if (y->color == 'R') {
+    if (y->color == red) {
       // If uncle is RED
       //
       // 1. Change color of parent and uncle as BLACK
       // 2. Change color of grandparent as RED
       // 3. Move z to grandparent
-      y->color = 'B';
-      z->parent->color = 'B';
-      z->parent->parent->color = 'R';
+      y->color = black;
+      z->parent->color = black;
+      z->parent->parent->color = red;
       z = z->parent->parent;
     } else {
       // Otherwise, there are four cases; LL, LR, RL and RR
@@ -108,10 +109,10 @@ void insert(node **root, int data) {
         //
         // 1. Swap color of parent and grandparent
         // 2. Right Rotate Grandparent
-        char ch = z->parent->color ;
+        color c = z->parent->color ;
         z->parent->color = z->parent->parent->color;
-        z->parent->parent->color = ch;
-        rotate_right(root,z->parent->parent);
+        z->parent->parent->color = c;
+        rotate_right(root, z->parent->parent);
       }
 
       if (z->parent == z->parent->parent->left && z == z->parent->right) {
@@ -120,11 +121,11 @@ void insert(node **root, int data) {
         // 1. Swap color of current node  and grandparent
         // 2. Left Rotate Parent
         // 3. Right Rotate Grand Parent
-        char ch = z->color ;
+        color c = z->color;
         z->color = z->parent->parent->color;
-        z->parent->parent->color = ch;
-        rotate_left(root,z->parent);
-        rotate_right(root,z->parent->parent);
+        z->parent->parent->color = c;
+        rotate_left(root, z->parent);
+        rotate_right(root, z->parent->parent);
       }
 
       if (z->parent == z->parent->parent->right && z == z->parent->right) {
@@ -132,10 +133,10 @@ void insert(node **root, int data) {
         //
         // 1. Swap color of parent and grandparent
         // 2. Left Rotate Grandparent
-        char ch = z->parent->color ;
+        color c = z->parent->color;
         z->parent->color = z->parent->parent->color;
-        z->parent->parent->color = ch;
-        rotate_left(root,z->parent->parent);
+        z->parent->parent->color = c;
+        rotate_left(root, z->parent->parent);
       }
 
       if (z->parent == z->parent->parent->right && z == z->parent->left) {
@@ -144,17 +145,17 @@ void insert(node **root, int data) {
         // 1. Swap color of current node  and grandparent
         // 2. Right Rotate Parent
         // 3. Left Rotate Grand Parent
-        char ch = z->color ;
+        color c = z->color;
         z->color = z->parent->parent->color;
-        z->parent->parent->color = ch;
-        rotate_right(root,z->parent);
-        rotate_left(root,z->parent->parent);
+        z->parent->parent->color = c;
+        rotate_right(root, z->parent);
+        rotate_left(root, z->parent->parent);
       }
     }
   }
 
   // Root should always be black
-  (*root)->color = 'B';
+  (*root)->color = black;
 }
 
 
