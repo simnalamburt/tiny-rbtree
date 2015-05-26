@@ -1,8 +1,10 @@
+CFLAGS = -Wall -Wextra -std=gnu89 -Werror=implicit-function-declaration
+
 all: rbtree.c
-	gcc -O3 -Wall -Wextra -std=gnu89 $^ -o bin
+	gcc -DNDEBUG -O3 $(CFLAGS) $^ -o bin
 
 test: all
 	@test/test
 
 debug: rbtree.c
-	gcc -g -Wall -Wextra -std=gnu89 $^ -o bin
+	gcc -g $(CFLAGS) $^ -o bin
