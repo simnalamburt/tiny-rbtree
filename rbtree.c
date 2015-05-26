@@ -1,10 +1,6 @@
 //
 // Tiny Red-Black Tree in C
 //
-// 프로그램 전체에 null pointer는 무조건 등장하지 않는 정책을 사용함.
-// nil이라는 전역 객체의 주소값(NIL)을 NIL LEAF 포인터로 사용한다.
-// NIL의 left, right, parent는 NIL.
-//
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -23,9 +19,6 @@ typedef struct node {
   color_t color : 1;
   struct node *left, *right, *parent;
 } node_t;
-
-static node_t nil = { 0, BLACK, &nil, &nil, &nil };
-static node_t *const NIL = &nil;
 
 static void insert(node_t **root, data_t data);
 static void traverse_inorder(node_t *root, void (*)(data_t data));
@@ -46,7 +39,7 @@ int main(int argc, char *_[] __attribute__((unused))) {
     return 0;
   }
 
-  node_t *root = NIL;
+  node_t *root = NULL;
   data_t val;
   while(scanf("%u", &val) != EOF) {
     insert(&root, val);
@@ -54,9 +47,6 @@ int main(int argc, char *_[] __attribute__((unused))) {
   traverse_inorder(root, per_node);
   destroy(&root);
 
-  assert(NIL->left == NIL);
-  assert(NIL->right == NIL);
-  assert(NIL->parent == NIL);
   return 0;
 }
 
@@ -65,43 +55,36 @@ int main(int argc, char *_[] __attribute__((unused))) {
 // Helper functions
 //
 static node_t *grandparent(const node_t *n) {
-  assert(n);
-  assert(n->parent);
-
-  return n != NIL && n->parent != NIL ? n->parent->parent : NIL;
+  return n != NULL && n->parent != NULL ? n->parent->parent : NULL;
 }
 
 static node_t *uncle(const node_t *n) {
-  assert(n);
-
   node_t *g = grandparent(n);
-  if (g == NIL) { return NIL; }
+  if (g == NULL) { return NULL; }
 
   return n->parent == g->left ? g->right : g->left;
 }
 
 static node_t *sibling(const node_t *n) {
-  assert(n);
-  assert(n->parent);
+  assert(n != NULL);
+  assert(n->parent != NULL);
 
   return n == n->parent->left ? n->parent->right : n->parent->left;
 }
 
 static bool is_leaf(const node_t *n) {
-  assert(n);
-  assert(n != NIL);
+  assert(n != NULL);
 
-  return n->left == NIL && n->right == NIL;
+  return n->left == NULL && n->right == NULL;
 }
 
 static void rotate_left(node_t *n) {
-  assert(n);
-  assert(n != NIL);
+  assert(n != NULL);
 
   node_t *c = n->right;
   node_t *p = n->parent;
 
-  if (c->left != NIL) {
+  if (c->left != NULL) {
     c->left->parent = n;
   }
 
@@ -110,7 +93,7 @@ static void rotate_left(node_t *n) {
   c->left = n;
   c->parent = p;
 
-  if (p == NIL) { return; }
+  if (p == NULL) { return; }
   if (p->left == n) {
     p->left = c;
   } else {
@@ -119,13 +102,12 @@ static void rotate_left(node_t *n) {
 }
 
 static void rotate_right(node_t *n) {
-  assert(n);
-  assert(n != NIL);
+  assert(n != NULL);
 
   node_t *c = n->left;
   node_t *p = n->parent;
 
-  if (c->right != NIL) {
+  if (c->right != NULL) {
     c->right->parent = n;
   }
 
@@ -134,7 +116,7 @@ static void rotate_right(node_t *n) {
   c->right = n;
   c->parent = p;
 
-  if (p == NIL) { return; }
+  if (p == NULL) { return; }
   if (p->left == n) {
     p->left = c;
   } else {
@@ -150,15 +132,14 @@ static void insert_rec(node_t*);
 
 void insert(node_t **root, data_t data) {
   assert(root);
-  assert(*root);
 
   // Allocate memory for a new node
   node_t *z = malloc(sizeof(node_t));
   z->data = data;
-  z->left = z->right = z->parent = NIL;
+  z->left = z->right = z->parent = NULL;
 
-  // If root is NIL, set z as root and return
-  if (*root == NIL) {
+  // If root is NULL, set z as root and return
+  if (*root == NULL) {
     z->color = BLACK;
     (*root) = z;
     return;
@@ -166,7 +147,7 @@ void insert(node_t **root, data_t data) {
 
   // Standard BST insertion
   node_t *y, *x = (*root);
-  while (x != NIL) {
+  while (x != NULL) {
     y = x;
     x = (z->data < x->data) ? x->left : x->right;
   }
@@ -182,7 +163,7 @@ void insert(node_t **root, data_t data) {
   insert_rec(z);
 
   // Correct root node's position
-  while ((*root)->parent != NIL) {
+  while ((*root)->parent != NULL) {
     *root = (*root)->parent;
   }
 }
@@ -191,7 +172,7 @@ void insert_rec(node_t *n) {
   assert(n);
 
   // Case 1
-  if (n->parent == NIL) {
+  if (n->parent == NULL) {
     n->color = BLACK;
     return;
   }
@@ -201,7 +182,7 @@ void insert_rec(node_t *n) {
 
   // Case 3
   node_t *u = uncle(n);
-  if ((u != NIL) && (u->color == RED)) {
+  if ((u != NULL) && (u->color == RED)) {
     n->parent->color = BLACK;
     u->color = BLACK;
     node_t *g = grandparent(n);
@@ -236,10 +217,9 @@ void insert_rec(node_t *n) {
 // Traverse arbitrary binary tree in inorder fashion
 //
 void traverse_inorder(node_t *node, void (*func)(data_t data)) {
-  assert(node);
   assert(func);
 
-  if (node == NIL) { return; }
+  if (node == NULL) { return; }
   traverse_inorder(node->left, func);
   func(node->data);
   traverse_inorder(node->right, func);
@@ -251,11 +231,10 @@ void traverse_inorder(node_t *node, void (*func)(data_t data)) {
 //
 void destroy(node_t **root) {
   assert(root);
-  assert(*root);
 
-  if (*root == NIL) { return; }
+  if (*root == NULL) { return; }
   destroy(&(*root)->left);
   destroy(&(*root)->right);
   free(*root);
-  *root = NIL;
+  *root = NULL;
 }
