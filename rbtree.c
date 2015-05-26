@@ -9,17 +9,18 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
+#include <stdint.h>
 #include <assert.h>
 
 
 //
 // Node of red-black tree
 //
-typedef long data_t;
+typedef uint32_t data_t;
 typedef enum { BLACK, RED } color_t;
 typedef struct node {
-  data_t data;
-  color_t color;
+  data_t data : 31;
+  color_t color : 1;
   struct node *left, *right, *parent;
 } node_t;
 
@@ -34,9 +35,9 @@ static void destroy(node_t **root);
 //
 // Test if rbtree works fine
 //
-static void per_node(data_t val) { printf("%ld\n", val); }
+static void per_node(data_t val) { printf("%u\n", val); }
 
-int main(int argc) {
+int main(int argc, char *_[] __attribute__((unused))) {
   if (argc > 1) {
     printf(
         "sizeof(node_t)\n"
@@ -46,8 +47,8 @@ int main(int argc) {
   }
 
   node_t *root = NIL;
-  long val;
-  while(scanf("%ld", &val) != EOF) {
+  data_t val;
+  while(scanf("%u", &val) != EOF) {
     insert(&root, val);
   }
   traverse_inorder(root, per_node);
