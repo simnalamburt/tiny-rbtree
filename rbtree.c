@@ -17,6 +17,7 @@ typedef struct node {
 
 static void insert(node_t **root, data_t data);
 static void traverse_inorder(node_t *root, void (*)(data_t data));
+static void destroy(node_t **root);
 
 
 //
@@ -27,8 +28,11 @@ static void per_node(data_t val) { printf("%ld\n", val); }
 int main() {
   node_t *root = NULL;
   long val;
-  while(scanf("%ld", &val) != EOF) { insert(&root, val); }
+  while(scanf("%ld", &val) != EOF) {
+    insert(&root, val);
+  }
   traverse_inorder(root, per_node);
+  destroy(&root);
   return 0;
 }
 
@@ -36,25 +40,25 @@ int main() {
 //
 // Helper functions
 //
-static node_t *grandparent(node_t *n) {
+static node_t *grandparent(const node_t *n) {
   return n && n->parent ? n->parent->parent : NULL;
 }
 
-static node_t *uncle(node_t *n) {
+static node_t *uncle(const node_t *n) {
   node_t *g = grandparent(n);
   if (!g) { return NULL; }
 
   return n->parent == g->left ? g->right : g->left;
 }
 
-static node_t *sibling(node_t *n) {
+static node_t *sibling(const node_t *n) {
   // Precondition
   assert(n != NULL);
 
   return n == n->parent->left ? n->parent->right : n->parent->left;
 }
 
-static bool is_leaf(node_t *n) {
+static bool is_leaf(const node_t *n) {
   // Precondition
   assert(n != NULL);
 
@@ -206,4 +210,19 @@ void traverse_inorder(node_t *node, void (*func)(data_t data)) {
   traverse_inorder(node->left, func);
   func(node->data);
   traverse_inorder(node->right, func);
+}
+
+
+//
+// Deallocate tree
+//
+void destroy(node_t **root) {
+  assert(root != NULL);
+  if (*root == NULL) { return; }
+
+  destroy(&(*root)->left);
+  destroy(&(*root)->right);
+
+  free(*root);
+  *root = NULL;
 }
