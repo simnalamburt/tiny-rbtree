@@ -36,7 +36,15 @@ static void destroy(node_t **root);
 //
 static void per_node(data_t val) { printf("%ld\n", val); }
 
-int main() {
+int main(int argc) {
+  if (argc > 1) {
+    printf(
+        "sizeof(node_t)\n"
+        "    %lu bytes\n"
+        "    %lu bits\n", sizeof(node_t), sizeof(node_t) * 8);
+    return 0;
+  }
+
   node_t *root = NIL;
   long val;
   while(scanf("%ld", &val) != EOF) {

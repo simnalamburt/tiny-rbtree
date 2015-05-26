@@ -3,7 +3,8 @@ Tiny Red-Black Tree
 Forked from [GeeksQuiz][]
 ```sh
 make
-./bin
+./bin info
+./bin < test/fixtures/test03
 ```
 
 #### Test
