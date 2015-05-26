@@ -1,0 +1,22 @@
+os:
+  - linux
+  - osx
+sudo: false
+language: c
+compiler:
+  - clang
+  - gcc
+env:
+  - FLAGS=
+  - FLAGS=debug
+script:
+  - make $(echo $FLAGS)
+  - test/do
+notifications:
+  irc:
+    nick: tiny-rbtree
+    channels:
+      - irc.uriirc.org:16667#hyeon
+    template:
+      - "#%{build_number} %{result}, %{build_url}"
+    skip_join: true
