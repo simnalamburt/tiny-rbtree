@@ -1,6 +1,5 @@
-Tiny Red-Black Tree
+Tiny Red-Black Tree [![Build status][travis-i]][travis-a]
 ========
-Forked from [GeeksQuiz][]
 ```sh
 make
 ./bin info
@@ -26,3 +25,5 @@ valgrind --tool=memcheck --leak-check=yes ./bin < test/fixtures/test03 1>/dev/nu
 ```
 
 [GeeksQuiz]: http://geeksquiz.com/c-program-red-black-tree-insertion
+[travis-i]: https://travis-ci.org/simnalamburt/tiny-rbtree.svg?branch=master
+[travis-a]: https://travis-ci.org/simnalamburt/tiny-rbtree
