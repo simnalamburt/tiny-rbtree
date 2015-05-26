@@ -21,8 +21,13 @@ typedef struct node {
 } node_t;
 
 static void insert(node_t **root, data_t data);
+static void delete(node_t **root, node_t *node);
 static void traverse_inorder(node_t *root, void (*)(data_t data));
 static void destroy(node_t **root);
+
+static color_t node_color(node_t *n) {
+  return n == NULL ? BLACK : n->color;
+}
 
 
 //
@@ -72,10 +77,26 @@ static node_t *sibling(const node_t *n) {
   return n == n->parent->left ? n->parent->right : n->parent->left;
 }
 
-static bool is_leaf(const node_t *n) {
-  assert(n != NULL);
+static void replace_node(node_t **root, node_t *oldn, node_t *newn) {
+  if (oldn->parent == NULL) {
+    *root = newn;
+  } else {
+    if (oldn == oldn->parent->left)
+      oldn->parent->left = newn;
+    else
+      oldn->parent->right = newn;
+  }
+  if (newn != NULL) {
+    newn->parent = oldn->parent;
+  }
+}
 
-  return n->left == NULL && n->right == NULL;
+static node_t *maximum_node(node_t *n) {
+  assert(n != NULL);
+  while (n->right != NULL) {
+    n = n->right;
+  }
+  return n;
 }
 
 static void rotate_left(node_t *n) {
@@ -164,6 +185,7 @@ void insert(node_t **root, data_t data) {
 
   // Correct root node's position
   while ((*root)->parent != NULL) {
+    assert(*root != (*root)->parent);
     *root = (*root)->parent;
   }
 }
@@ -209,6 +231,129 @@ void insert_rec(node_t *n) {
     rotate_right(g);
   } else {
     rotate_left(g);
+  }
+}
+
+
+//
+// Removal
+//
+static void delete_case1(node_t *n);
+static void delete_case2(node_t *n);
+static void delete_case3(node_t *n);
+static void delete_case4(node_t *n);
+static void delete_case5(node_t *n);
+static void delete_case6(node_t *n);
+
+void delete(node_t **root, node_t *n) {
+  if (n == NULL) { return; }
+
+  if (n->left != NULL && n->right != NULL) {
+    // Copy key/value from predecessor and then delete it instead
+    node_t *pred = maximum_node(n->left);
+    n->data = pred->data;
+    n = pred;
+  }
+
+  assert(n->left == NULL || n->right == NULL);
+  node_t *child = n->right == NULL ? n->left  : n->right;
+  if (node_color(n) == BLACK) {
+    n->color = node_color(child);
+    delete_case1(n);
+  }
+  replace_node(root, n, child);
+  if (n->parent == NULL && child != NULL) // root should be black
+    child->color = BLACK;
+  free(n);
+
+  // Correct root node's position
+  if (*root == NULL) { return; }
+  while ((*root)->parent != NULL) {
+    assert(*root != (*root)->parent);
+    *root = (*root)->parent;
+  }
+}
+
+void delete_case1(node_t *n) {
+  if (n->parent == NULL)
+    return;
+  else
+    delete_case2(n);
+}
+
+void delete_case2(node_t *n) {
+  if (node_color(sibling(n)) == RED) {
+    n->parent->color = RED;
+    sibling(n)->color = BLACK;
+    if (n == n->parent->left)
+      rotate_left(n->parent);
+    else
+      rotate_right(n->parent);
+  }
+  delete_case3(n);
+}
+
+void delete_case3(node_t *n) {
+  if (node_color(n->parent) == BLACK &&
+      node_color(sibling(n)) == BLACK &&
+      node_color(sibling(n)->left) == BLACK &&
+      node_color(sibling(n)->right) == BLACK)
+  {
+    sibling(n)->color = RED;
+    delete_case1(n->parent);
+  }
+  else
+    delete_case4(n);
+}
+
+void delete_case4(node_t *n) {
+  if (node_color(n->parent) == RED &&
+      node_color(sibling(n)) == BLACK &&
+      node_color(sibling(n)->left) == BLACK &&
+      node_color(sibling(n)->right) == BLACK)
+  {
+    sibling(n)->color = RED;
+    n->parent->color = BLACK;
+  }
+  else
+    delete_case5(n);
+}
+
+void delete_case5(node_t *n) {
+  if (n == n->parent->left &&
+      node_color(sibling(n)) == BLACK &&
+      node_color(sibling(n)->left) == RED &&
+      node_color(sibling(n)->right) == BLACK)
+  {
+    sibling(n)->color = RED;
+    sibling(n)->left->color = BLACK;
+    rotate_right(sibling(n));
+  }
+  else if (n == n->parent->right &&
+      node_color(sibling(n)) == BLACK &&
+      node_color(sibling(n)->right) == RED &&
+      node_color(sibling(n)->left) == BLACK)
+  {
+    sibling(n)->color = RED;
+    sibling(n)->right->color = BLACK;
+    rotate_left(sibling(n));
+  }
+  delete_case6(n);
+}
+
+void delete_case6(node_t *n) {
+  sibling(n)->color = node_color(n->parent);
+  n->parent->color = BLACK;
+  if (n == n->parent->left) {
+    assert (node_color(sibling(n)->right) == RED);
+    sibling(n)->right->color = BLACK;
+    rotate_left(n->parent);
+  }
+  else
+  {
+    assert (node_color(sibling(n)->left) == RED);
+    sibling(n)->left->color = BLACK;
+    rotate_right(n->parent);
   }
 }
 
