@@ -6,15 +6,22 @@ make
 ./bin
 ```
 
-### Test
+#### Test
 ```sh
-make test
+make debug
+test/do
 ```
 
-### Debugging
+#### Debugging
 ```sh
 make debug
 gdb ./bin
+```
+
+#### Memory Check
+```sh
+make debug
+valgrind --tool=memcheck --leak-check=yes ./bin < test/fixtures/test03
 ```
 
 [GeeksQuiz]: http://geeksquiz.com/c-program-red-black-tree-insertion

@@ -5,6 +5,3 @@ all: rbtree.c
 
 debug: rbtree.c
 	gcc -g $(CFLAGS) $^ -o bin
-
-test: debug
-	@test/test
