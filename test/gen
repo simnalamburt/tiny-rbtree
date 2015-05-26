@@ -1,0 +1,19 @@
+#!/usr/bin/env ruby
+tree = []
+
+10000.times do
+  i = rand(0..100)
+
+  while tree.count > i
+    n = tree.sample
+    tree.delete(n)
+    puts "d#{n}"
+  end
+  while tree.count < i
+    n = rand(10000)
+    next if tree.find_index(n) != nil
+
+    tree << n
+    puts "i#{n}"
+  end
+end
