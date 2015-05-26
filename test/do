@@ -7,17 +7,25 @@ Dir.foreach(dir) do |item|
   file = "#{dir}/#{item}"
 
   print "#{item}: "
-  expect = open(file).read.chomp.split.map(&:to_i).sort.join("\n") + "\n"
-  actual = `../bin < #{file}`
+
+  expect = []
+  open(file).each do |line|
+    case line[0]
+    when 'i'
+      expect << line[1..-1].to_i
+    when 'd'
+      expect.delete(line[1..-1].to_i)
+    else
+      break
+    end
+  end
+  expect = expect.sort.join("\n") + "\n"
+  actual = `../bin < #{file} 2>/dev/null`
   puts expect == actual ? "\e[32mOK\e[0m" : "\e[31mFailed\e[0m"
 
-  if expect != actual
-    puts ''
-    puts 'Expect:'
-    p expect
-    puts ''
-    puts 'Actual:'
-    p actual
-    puts ''
-  end
+  next unless $?.success?
+  next if expect == actual
+  puts "  Expect: #{expect.inspect[0..65]}"
+  puts "  Actual: #{actual.inspect[0..65]}"
+  puts ''
 end

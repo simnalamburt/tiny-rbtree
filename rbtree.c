@@ -21,6 +21,7 @@ typedef struct node {
 } node_t;
 
 static void insert(node_t **root, data_t data);
+static node_t *search(const node_t *root, data_t query);
 static void delete(node_t **root, node_t *node);
 static void traverse_inorder(node_t *root, void (*)(data_t data));
 static void destroy(node_t **root);
@@ -45,13 +46,22 @@ int main(int argc, char *_[] __attribute__((unused))) {
   }
 
   node_t *root = NULL;
-  data_t val;
-  while(scanf("%u", &val) != EOF) {
-    insert(&root, val);
+  while (true) {
+    int cmd = getchar();
+    data_t val;
+    if (scanf("%u\n", &val) == EOF) { break; }
+
+    if (cmd == 'i') {
+      insert(&root, val);
+    } else if (cmd == 'd') {
+      node_t *n = search(root, val);
+      delete(&root, n);
+    } else {
+      break;
+    }
   }
   traverse_inorder(root, per_node);
   destroy(&root);
-
   return 0;
 }
 
@@ -232,6 +242,16 @@ void insert_rec(node_t *n) {
   } else {
     rotate_left(g);
   }
+}
+
+
+//
+// Search
+//
+node_t *search(const node_t *n, data_t query) {
+  if (n == NULL) { return NULL; }
+  if (n->data == query) { return (node_t*)n; }
+  return n->data > query ? search(n->left, query) : search(n->right, query);
 }
 
 
