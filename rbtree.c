@@ -1,5 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdbool.h>
+#include <assert.h>
 
 
 //
@@ -46,10 +48,23 @@ static node_t *uncle(node_t *n) {
 }
 
 static node_t *sibling(node_t *n) {
+  // Precondition
+  assert(n != NULL);
+
   return n == n->parent->left ? n->parent->right : n->parent->left;
 }
 
+static bool is_leaf(node_t *n) {
+  // Precondition
+  assert(n != NULL);
+
+  return n->left == NULL && n->right == NULL;
+}
+
 static void rotate_left(node_t *n) {
+  // Precondition
+  assert(n != NULL);
+
   node_t *c = n->right;
   node_t *p = n->parent;
 
@@ -71,6 +86,9 @@ static void rotate_left(node_t *n) {
 }
 
 static void rotate_right(node_t *n) {
+  // Precondition
+  assert(n != NULL);
+
   node_t *c = n->left;
   node_t *p = n->parent;
 
@@ -134,6 +152,9 @@ void insert(node_t **root, data_t data) {
 }
 
 void insert_rec(node_t *n) {
+  // Precondition
+  assert(n != NULL);
+
   // Case 1
   if (n->parent == NULL) {
     n->color = BLACK;
