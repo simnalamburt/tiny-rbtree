@@ -1,6 +1,7 @@
 #!/usr/bin/env ruby
 Dir.chdir(File.dirname(__FILE__))
 
+result = true
 dir = 'fixtures'
 Dir.foreach(dir) do |item|
   next if item == '.' or item == '..'
@@ -21,6 +22,7 @@ Dir.foreach(dir) do |item|
   end
   expect = expect.sort.join("\n") + "\n"
   actual = `../bin < #{file} 2>/dev/null`
+  result &&= expect == actual
   puts expect == actual ? "\e[32mOK\e[0m" : "\e[31mFailed\e[0m"
 
   next unless $?.success?
@@ -29,3 +31,5 @@ Dir.foreach(dir) do |item|
   puts "  Actual: #{actual.inspect[0..65]}"
   puts ''
 end
+
+exit result
