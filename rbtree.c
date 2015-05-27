@@ -111,6 +111,57 @@ static node_t *maximum_node(node_t *n) {
   return n;
 }
 
+static void swap_node(node_t *lhs, node_t *rhs) {
+  assert(lhs != NULL);
+  assert(rhs != NULL);
+
+  color_t c = rhs->color;
+  rhs->color = lhs->color;
+  lhs->color = c;
+
+  void swap_addr(node_t**, node_t**);
+
+  // Swap backref
+  if (lhs->left != NULL && rhs->left != NULL) {
+    swap_addr(&lhs->left->parent, &rhs->left->parent);
+  } else if (lhs->left != NULL) {
+    lhs->left->parent = rhs;
+  } else if (rhs->left != NULL) {
+    rhs->left->parent = lhs;
+  }
+
+  if (lhs->right != NULL && rhs->right != NULL) {
+    swap_addr(&lhs->right->parent, &rhs->right->parent);
+  } else if (lhs->right != NULL) {
+    lhs->right->parent = rhs;
+  } else if (rhs->right != NULL) {
+    rhs->right->parent = lhs;
+  }
+
+  node_t **l_backref = lhs->parent == NULL ? NULL :
+    lhs->parent->left == lhs ? &lhs->parent->left : &lhs->parent->right;
+  node_t **r_backref = rhs->parent == NULL ? NULL :
+    rhs->parent->left == rhs ? &rhs->parent->left : &rhs->parent->right;
+  if (lhs->parent != NULL && rhs->parent != NULL) {
+    swap_addr(l_backref, r_backref);
+  } else if (lhs->parent != NULL) {
+    *l_backref = rhs;
+  } else if (rhs->parent != NULL) {
+    *r_backref = lhs;
+  }
+
+  // Swap itself
+  swap_addr(&lhs->parent, &rhs->parent);
+  swap_addr(&lhs->left, &rhs->left);
+  swap_addr(&lhs->right, &rhs->right);
+}
+
+void swap_addr(node_t **lhs, node_t **rhs) {
+  void *t = *rhs;
+  *rhs = *lhs;
+  *lhs = t;
+}
+
 static void rotate_left(node_t *n) {
   assert(n != NULL);
 
@@ -264,8 +315,7 @@ void delete(node_t **root, node_t *n) {
   if (n->left != NULL && n->right != NULL) {
     // Copy key/value from predecessor and then delete it instead
     node_t *pred = maximum_node(n->left);
-    n->data = pred->data;
-    n = pred;
+    swap_node(n, pred);
   }
 
   assert(n->left == NULL || n->right == NULL);
