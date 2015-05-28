@@ -114,10 +114,33 @@ static node_t *maximum_node(node_t *n) {
 static void swap_node(node_t *lhs, node_t *rhs) {
   assert(lhs != NULL);
   assert(rhs != NULL);
+  assert(lhs->right != rhs);
 
+  // Swap color
   color_t c = rhs->color;
   rhs->color = lhs->color;
   lhs->color = c;
+
+  if (lhs->left == rhs) {
+    lhs->left = rhs->left;
+    rhs->parent = lhs->parent;
+    lhs->parent = rhs;
+    rhs->left = lhs;
+    rhs->right = lhs->right;
+    lhs->right = NULL;
+    rhs->right->parent = rhs;
+    if(lhs->left != NULL) {
+      lhs->left->parent = lhs;
+    }
+    if (rhs->parent != NULL) {
+      if(rhs->parent->left == lhs) {
+        rhs->parent->left = rhs;
+      } else {
+        rhs->parent->right = rhs;
+      }
+    }
+    return;
+  }
 
   void swap_addr(node_t**, node_t**);
 
