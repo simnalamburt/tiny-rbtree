@@ -22,6 +22,7 @@ typedef struct node {
 
 static void insert(node_t **root, data_t data);
 static node_t *search(const node_t *root, data_t query);
+static node_t *best_fit(const node_t *root, data_t query);
 static void delete(node_t **root, node_t *node);
 static void traverse_inorder(node_t *root, void (*)(data_t data));
 static void destroy(node_t **root);
@@ -326,6 +327,20 @@ node_t *search(const node_t *n, data_t query) {
   if (n == NULL) { return NULL; }
   if (n->data == query) { return (node_t*)n; }
   return n->data > query ? search(n->left, query) : search(n->right, query);
+}
+
+
+//
+// Best fit
+//
+node_t *best_fit(const node_t *n, data_t query) {
+  if (n == NULL) { return NULL; }
+  if (n->data == query) { return (node_t*)n; }
+  if (n->data < query) { return best_fit(n->right, query); }
+
+  node_t *try = best_fit(n->left, query);
+  if (try == NULL || try->data < query) { return (node_t*)n; }
+  return try;
 }
 
 
