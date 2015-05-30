@@ -337,36 +337,34 @@ void delete(node_t **root, node_t *n) {
 
   if (n->parent == NULL && n->left == NULL && n->right == NULL) {
     assert(*root == n);
-    free(n);
     *root = NULL;
-    return;
-  }
+  } else {
+    if (n->left != NULL && n->right != NULL) {
+      // Copy key/value from predecessor and then delete it instead
+      node_t *pred = maximum_node(n->left);
+      swap_node(n, pred);
+    }
 
-  if (n->left != NULL && n->right != NULL) {
-    // Copy key/value from predecessor and then delete it instead
-    node_t *pred = maximum_node(n->left);
-    swap_node(n, pred);
-  }
+    assert(n->left == NULL || n->right == NULL);
+    node_t *child = n->right == NULL ? n->left  : n->right;
+    if (node_color(n) == BLACK) {
+      n->color = node_color(child);
 
-  assert(n->left == NULL || n->right == NULL);
-  node_t *child = n->right == NULL ? n->left  : n->right;
-  if (node_color(n) == BLACK) {
-    n->color = node_color(child);
+      void delete_rec(node_t*);
+      delete_rec(n);
+    }
+    replace_node(root, n, child);
+    if (n->parent == NULL && child != NULL) {
+      // root should be black
+      child->color = BLACK;
+    }
 
-    void delete_rec(node_t*);
-    delete_rec(n);
-  }
-  replace_node(root, n, child);
-  if (n->parent == NULL && child != NULL) {
-    // root should be black
-    child->color = BLACK;
-  }
-
-  // Correct root node's position
-  if (*root == NULL) { return; }
-  while ((*root)->parent != NULL) {
-    assert(*root != (*root)->parent);
-    *root = (*root)->parent;
+    // Correct root node's position
+    if (*root == NULL) { return; }
+    while ((*root)->parent != NULL) {
+      assert(*root != (*root)->parent);
+      *root = (*root)->parent;
+    }
   }
 
   free(n);
