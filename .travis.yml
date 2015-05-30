@@ -1,8 +1,9 @@
-os:
-  - linux
-  - osx
 sudo: false
 language: c
+addons:
+  apt:
+    packages:
+    - valgrind
 compiler:
   - clang
   - gcc
