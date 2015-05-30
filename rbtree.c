@@ -335,6 +335,13 @@ node_t *search(const node_t *n, data_t query) {
 void delete(node_t **root, node_t *n) {
   if (n == NULL) { return; }
 
+  if (n->parent == NULL && n->left == NULL && n->right == NULL) {
+    assert(*root == n);
+    free(n);
+    *root = NULL;
+    return;
+  }
+
   if (n->left != NULL && n->right != NULL) {
     // Copy key/value from predecessor and then delete it instead
     node_t *pred = maximum_node(n->left);
