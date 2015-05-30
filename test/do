@@ -1,13 +1,15 @@
 #!/usr/bin/env ruby
+
+puts '           |  test  | memory'
+puts '-----------|--------|--------'
+
 Dir.chdir(File.dirname(__FILE__))
 
-result = true
+exitcode = true
 dir = 'fixtures'
 Dir.foreach(dir) do |item|
   next if item == '.' or item == '..'
   file = "#{dir}/#{item}"
-
-  print "#{item}: "
 
   expect = []
   open(file).each do |line|
@@ -22,8 +24,18 @@ Dir.foreach(dir) do |item|
   end
   expect = expect.sort.join("\n") + "\n"
   actual = `../bin < #{file} 2>/dev/null`
-  result &&= expect == actual
-  puts expect == actual ? "\e[32mOK\e[0m" : "\e[31mFailed\e[0m"
+  test = expect == actual
+
+  `valgrind -q --leak-check=yes --log-fd=1 --error-exitcode=1 ../bin < #{file}`
+  mem = $?.success?
+
+  def msg(bool)
+    bool ? "\e[32m  OK  \e[0m" : "\e[31mFailed\e[0m"
+  end
+
+  puts '%10s | %6s | %6s' % [item, msg(test), msg(mem)]
+
+  exitcode &&= test && mem
 
   next unless $?.success?
   next if expect == actual
@@ -32,4 +44,4 @@ Dir.foreach(dir) do |item|
   puts ''
 end
 
-exit result
+exit exitcode
