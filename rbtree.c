@@ -354,7 +354,6 @@ void delete(node_t **root, node_t *n) {
     // root should be black
     child->color = BLACK;
   }
-  free(n);
 
   // Correct root node's position
   if (*root == NULL) { return; }
@@ -362,6 +361,8 @@ void delete(node_t **root, node_t *n) {
     assert(*root != (*root)->parent);
     *root = (*root)->parent;
   }
+
+  free(n);
 }
 
 void delete_rec(node_t *n) {
