@@ -21,7 +21,7 @@ gdb ./bin
 #### Memory Check
 ```sh
 make debug
-valgrind --tool=memcheck --leak-check=yes ./bin < test/fixtures/test03 1>/dev/null
+valgrind --tool=memcheck --leak-check=yes ./bin < test/fixtures/memory00 1>/dev/null
 ```
 
 [GeeksQuiz]: http://geeksquiz.com/c-program-red-black-tree-insertion
