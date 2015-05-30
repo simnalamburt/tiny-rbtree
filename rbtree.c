@@ -20,7 +20,7 @@ typedef struct node {
   struct node *left, *right, *parent;
 } node_t;
 
-static void insert(node_t **root, data_t data);
+static void insert(node_t **root, node_t *node);
 static node_t *search(const node_t *root, data_t query);
 static node_t *best_fit(const node_t *root, data_t query);
 static void delete(node_t **root, node_t *node);
@@ -53,7 +53,11 @@ int main(int argc, char *_[] __attribute__((unused))) {
     if (scanf("%u\n", &val) == EOF) { break; }
 
     if (cmd == 'i') {
-      insert(&root, val);
+      node_t *n = malloc(sizeof(node_t));
+      n->data = val;
+      n->left = n->right = n->parent = NULL;
+
+      insert(&root, n);
     } else if (cmd == 'd') {
       node_t *n = search(root, val);
       delete(&root, n);
@@ -236,18 +240,13 @@ static void rotate_right(node_t *n) {
 //
 // Insert
 //
-void insert(node_t **root, data_t data) {
+void insert(node_t **root, node_t *n) {
   assert(root);
 
-  // Allocate memory for a new node
-  node_t *z = malloc(sizeof(node_t));
-  z->data = data;
-  z->left = z->right = z->parent = NULL;
-
-  // If root is NULL, set z as root and return
+  // If root is NULL, set n as root and return
   if (*root == NULL) {
-    z->color = BLACK;
-    (*root) = z;
+    n->color = BLACK;
+    (*root) = n;
     return;
   }
 
@@ -255,19 +254,19 @@ void insert(node_t **root, data_t data) {
   node_t *y, *x = (*root);
   while (x != NULL) {
     y = x;
-    x = (z->data < x->data) ? x->left : x->right;
+    x = (n->data < x->data) ? x->left : x->right;
   }
-  z->color = RED;
-  z->parent = y;
-  if (z->data < y->data) {
-    y->left = z;
+  n->color = RED;
+  n->parent = y;
+  if (n->data < y->data) {
+    y->left = n;
   } else {
-    y->right = z;
+    y->right = n;
   }
 
   // Fixup red-black tree
   void insert_rec(node_t*);
-  insert_rec(z);
+  insert_rec(n);
 
   // Correct root node's position
   while ((*root)->parent != NULL) {
