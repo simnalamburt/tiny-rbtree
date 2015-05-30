@@ -60,7 +60,10 @@ int main(int argc, char *_[] __attribute__((unused))) {
       insert(&root, n);
     } else if (cmd == 'd') {
       node_t *n = search(root, val);
+
       delete(&root, n);
+
+      free(n);
     } else {
       break;
     }
@@ -348,40 +351,38 @@ node_t *best_fit(const node_t *n, data_t query) {
 //
 void delete(node_t **root, node_t *n) {
   if (n == NULL) { return; }
-
   if (n->parent == NULL && n->left == NULL && n->right == NULL) {
     assert(*root == n);
     *root = NULL;
-  } else {
-    if (n->left != NULL && n->right != NULL) {
-      // Copy key/value from predecessor and then delete it instead
-      node_t *pred = maximum_node(n->left);
-      swap_node(n, pred);
-    }
-
-    assert(n->left == NULL || n->right == NULL);
-    node_t *child = n->right == NULL ? n->left  : n->right;
-    if (node_color(n) == BLACK) {
-      n->color = node_color(child);
-
-      void delete_rec(node_t*);
-      delete_rec(n);
-    }
-    replace_node(root, n, child);
-    if (n->parent == NULL && child != NULL) {
-      // root should be black
-      child->color = BLACK;
-    }
-
-    // Correct root node's position
-    if (*root == NULL) { return; }
-    while ((*root)->parent != NULL) {
-      assert(*root != (*root)->parent);
-      *root = (*root)->parent;
-    }
+    return;
   }
 
-  free(n);
+  if (n->left != NULL && n->right != NULL) {
+    // Copy key/value from predecessor and then delete it instead
+    node_t *pred = maximum_node(n->left);
+    swap_node(n, pred);
+  }
+
+  assert(n->left == NULL || n->right == NULL);
+  node_t *child = n->right == NULL ? n->left  : n->right;
+  if (node_color(n) == BLACK) {
+    n->color = node_color(child);
+
+    void delete_rec(node_t*);
+    delete_rec(n);
+  }
+  replace_node(root, n, child);
+  if (n->parent == NULL && child != NULL) {
+    // root should be black
+    child->color = BLACK;
+  }
+
+  // Correct root node's position
+  if (*root == NULL) { return; }
+  while ((*root)->parent != NULL) {
+    assert(*root != (*root)->parent);
+    *root = (*root)->parent;
+  }
 }
 
 void delete_rec(node_t *n) {
