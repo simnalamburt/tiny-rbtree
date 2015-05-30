@@ -22,8 +22,8 @@ Dir.foreach(dir) do |item|
       break
     end
   end
-  expect = expect.sort.join("\n") + "\n"
-  actual = `../bin < #{file} 2>/dev/null`
+  expect = expect.sort.join("\n")
+  actual = `../bin < #{file} 2>/dev/null`.chomp
   test = expect == actual
 
   `valgrind -q --leak-check=yes --log-fd=1 --error-exitcode=1 ../bin < #{file}`
