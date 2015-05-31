@@ -7,7 +7,7 @@ Dir.chdir(File.dirname(__FILE__))
 
 exitcode = true
 dir = 'fixtures'
-Dir.foreach(dir) do |item|
+Dir.entries(dir).sort.each do |item|
   next if item == '.' or item == '..'
   file = "#{dir}/#{item}"
 
