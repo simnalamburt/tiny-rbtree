@@ -16,12 +16,16 @@ typedef uint32_t data_t;
 typedef enum { BLACK, RED } color_t;
 typedef struct node {
   data_t data : 31;
-  color_t color : 1;
+  color_t _color : 1;
   struct node *left, *right, *parent;
 } node_t;
 
 static inline color_t get_color(const node_t *this) {
-  return this == NULL ? BLACK : this->color;
+  return this == NULL ? BLACK : this->_color;
+}
+
+static inline void set_color(node_t *this, color_t color) {
+  this->_color = color;
 }
 
 static void insert(node_t **root, node_t *node);
@@ -126,9 +130,9 @@ static void swap_node(node_t *lhs, node_t *rhs) {
   assert(lhs->right != rhs);
 
   // Swap color
-  color_t c = rhs->color;
-  rhs->color = lhs->color;
-  lhs->color = c;
+  color_t c = get_color(rhs);
+  set_color(rhs, get_color(lhs));
+  set_color(lhs, c);
 
   if (lhs->left == rhs) {
     lhs->left = rhs->left;
@@ -249,7 +253,7 @@ void insert(node_t **root, node_t *n) {
 
   // If root is NULL, set n as root and return
   if (*root == NULL) {
-    n->color = BLACK;
+    set_color(n, BLACK);
     (*root) = n;
     return;
   }
@@ -260,7 +264,7 @@ void insert(node_t **root, node_t *n) {
     y = x;
     x = (n->data < x->data) ? x->left : x->right;
   }
-  n->color = RED;
+  set_color(n, RED);
   n->parent = y;
   if (n->data < y->data) {
     y->left = n;
@@ -284,20 +288,20 @@ void insert_rec(node_t *n) {
 
   // Case 1
   if (n->parent == NULL) {
-    n->color = BLACK;
+    set_color(n, BLACK);
     return;
   }
 
   // Case 2
-  if (n->parent->color == BLACK) { return; }
+  if (get_color(n->parent) == BLACK) { return; }
 
   // Case 3
   node_t *u = uncle(n);
-  if ((u != NULL) && (u->color == RED)) {
-    n->parent->color = BLACK;
-    u->color = BLACK;
+  if ((u != NULL) && (get_color(u) == RED)) {
+    set_color(n->parent, BLACK);
+    set_color(u, BLACK);
     node_t *g = grandparent(n);
-    g->color = RED;
+    set_color(g, RED);
     return insert_rec(g);
   }
 
@@ -312,9 +316,9 @@ void insert_rec(node_t *n) {
   }
 
   // Case 5
-  n->parent->color = BLACK;
+  set_color(n->parent, BLACK);
   g = grandparent(n);
-  g->color = RED;
+  set_color(g, RED);
   if (n == n->parent->left) {
     rotate_right(g);
   } else {
@@ -367,7 +371,7 @@ void delete(node_t **root, node_t *n) {
   assert(n->left == NULL || n->right == NULL);
   node_t *child = n->right == NULL ? n->left  : n->right;
   if (get_color(n) == BLACK) {
-    n->color = get_color(child);
+    set_color(n, get_color(child));
 
     void delete_rec(node_t*);
     delete_rec(n);
@@ -375,7 +379,7 @@ void delete(node_t **root, node_t *n) {
   replace_node(root, n, child);
   if (n->parent == NULL && child != NULL) {
     // root should be black
-    child->color = BLACK;
+    set_color(child, BLACK);
   }
 
   // Correct root node's position
@@ -392,8 +396,8 @@ void delete_rec(node_t *n) {
 
   // Case 2
   if (get_color(sibling(n)) == RED) {
-    n->parent->color = RED;
-    sibling(n)->color = BLACK;
+    set_color(n->parent, RED);
+    set_color(sibling(n), BLACK);
     if (n == n->parent->left) {
       rotate_left(n->parent);
     } else {
@@ -407,7 +411,7 @@ void delete_rec(node_t *n) {
       get_color(sibling(n)->left) == BLACK &&
       get_color(sibling(n)->right) == BLACK)
   {
-    sibling(n)->color = RED;
+    set_color(sibling(n), RED);
     return delete_rec(n->parent);
   }
 
@@ -417,8 +421,8 @@ void delete_rec(node_t *n) {
       get_color(sibling(n)->left) == BLACK &&
       get_color(sibling(n)->right) == BLACK)
   {
-    sibling(n)->color = RED;
-    n->parent->color = BLACK;
+    set_color(sibling(n), RED);
+    set_color(n->parent, BLACK);
     return;
   }
 
@@ -428,29 +432,29 @@ void delete_rec(node_t *n) {
       get_color(sibling(n)->left) == RED &&
       get_color(sibling(n)->right) == BLACK)
   {
-    sibling(n)->color = RED;
-    sibling(n)->left->color = BLACK;
+    set_color(sibling(n), RED);
+    set_color(sibling(n)->left, BLACK);
     rotate_right(sibling(n));
   } else if (n == n->parent->right &&
       get_color(sibling(n)) == BLACK &&
       get_color(sibling(n)->right) == RED &&
       get_color(sibling(n)->left) == BLACK)
   {
-    sibling(n)->color = RED;
-    sibling(n)->right->color = BLACK;
+    set_color(sibling(n), RED);
+    set_color(sibling(n)->right, BLACK);
     rotate_left(sibling(n));
   }
 
   // Case 6
-  sibling(n)->color = get_color(n->parent);
-  n->parent->color = BLACK;
+  set_color(sibling(n), get_color(n->parent));
+  set_color(n->parent, BLACK);
   if (n == n->parent->left) {
-    assert (get_color(sibling(n)->right) == RED);
-    sibling(n)->right->color = BLACK;
+    assert(get_color(sibling(n)->right) == RED);
+    set_color(sibling(n)->right, BLACK);
     rotate_left(n->parent);
   } else {
-    assert (get_color(sibling(n)->left) == RED);
-    sibling(n)->left->color = BLACK;
+    assert(get_color(sibling(n)->left) == RED);
+    set_color(sibling(n)->left, BLACK);
     rotate_right(n->parent);
   }
 }
