@@ -15,18 +15,16 @@
 typedef uint32_t data_t;
 typedef enum { BLACK, RED } color_t;
 typedef struct node {
-  data_t data : 31;
+  data_t _data : 31;
   color_t _color : 1;
   struct node *left, *right, *parent;
 } node_t;
 
-static inline color_t get_color(const node_t *this) {
-  return this == NULL ? BLACK : this->_color;
-}
+static inline data_t get_data(const node_t* this) { return this->_data; }
+static inline void set_data(node_t* this, data_t data) { this->_data = data; }
 
-static inline void set_color(node_t *this, color_t color) {
-  this->_color = color;
-}
+static inline color_t get_color(const node_t *this) { return this == NULL ? BLACK : this->_color; }
+static inline void set_color(node_t *this, color_t color) { this->_color = color; }
 
 static void insert(node_t **root, node_t *node);
 static node_t *search(const node_t *root, data_t query);
@@ -59,7 +57,7 @@ int main(int argc, char *_[] __attribute__((unused))) {
 
     if (cmd == 'i') {
       node_t *n = malloc(sizeof(node_t));
-      n->data = val;
+      set_data(n, val);
       n->left = n->right = n->parent = NULL;
 
       insert(&root, n);
@@ -262,11 +260,11 @@ void insert(node_t **root, node_t *n) {
   node_t *y, *x = (*root);
   while (x != NULL) {
     y = x;
-    x = (n->data < x->data) ? x->left : x->right;
+    x = (get_data(n) < get_data(x)) ? x->left : x->right;
   }
   set_color(n, RED);
   n->parent = y;
-  if (n->data < y->data) {
+  if (get_data(n) < get_data(y)) {
     y->left = n;
   } else {
     y->right = n;
@@ -332,8 +330,8 @@ void insert_rec(node_t *n) {
 //
 node_t *search(const node_t *n, data_t query) {
   if (n == NULL) { return NULL; }
-  if (n->data == query) { return (node_t*)n; }
-  return n->data > query ? search(n->left, query) : search(n->right, query);
+  if (get_data(n) == query) { return (node_t*)n; }
+  return get_data(n) > query ? search(n->left, query) : search(n->right, query);
 }
 
 
@@ -342,11 +340,11 @@ node_t *search(const node_t *n, data_t query) {
 //
 node_t *best_fit(const node_t *n, data_t query) {
   if (n == NULL) { return NULL; }
-  if (n->data == query) { return (node_t*)n; }
-  if (n->data < query) { return best_fit(n->right, query); }
+  if (get_data(n) == query) { return (node_t*)n; }
+  if (get_data(n) < query) { return best_fit(n->right, query); }
 
   node_t *try = best_fit(n->left, query);
-  if (try == NULL || try->data < query) { return (node_t*)n; }
+  if (try == NULL || get_data(try) < query) { return (node_t*)n; }
   return try;
 }
 
@@ -468,7 +466,7 @@ void traverse_inorder(node_t *node, void (*func)(data_t data)) {
 
   if (node == NULL) { return; }
   traverse_inorder(node->left, func);
-  func(node->data);
+  func(get_data(node));
   traverse_inorder(node->right, func);
 }
 
