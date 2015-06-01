@@ -31,7 +31,6 @@ static node_t *search(const node_t *root, data_t query);
 static node_t *best_fit(const node_t *root, data_t query);
 static void delete(node_t **root, node_t *node);
 static void traverse_inorder(node_t *root, void (*)(data_t data));
-static void destroy(node_t **root);
 
 
 
@@ -39,7 +38,15 @@ static void destroy(node_t **root);
 // Test if rbtree works fine
 //
 static void per_node(data_t val) { printf("%u\n", val); }
+static void destroy(node_t **root) {
+  assert(root);
 
+  if (*root == NULL) { return; }
+  destroy(&(*root)->left);
+  destroy(&(*root)->right);
+  free(*root);
+  *root = NULL;
+}
 int main(int argc, char *_[] __attribute__((unused))) {
   if (argc > 1) {
     printf(
@@ -468,18 +475,4 @@ void traverse_inorder(node_t *node, void (*func)(data_t data)) {
   traverse_inorder(node->left, func);
   func(get_data(node));
   traverse_inorder(node->right, func);
-}
-
-
-//
-// Deallocate tree
-//
-void destroy(node_t **root) {
-  assert(root);
-
-  if (*root == NULL) { return; }
-  destroy(&(*root)->left);
-  destroy(&(*root)->right);
-  free(*root);
-  *root = NULL;
 }
