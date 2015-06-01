@@ -268,8 +268,10 @@ void insert(node_t **root, node_t *n) {
   while (x != NULL) {
     y = x;
     x = (get_data(n) < get_data(x)) ? x->left : x->right;
+    assert(y != x);
   }
   set_color(n, RED);
+  assert(n != y);
   n->parent = y;
   if (get_data(n) < get_data(y)) {
     y->left = n;
