@@ -1,14 +1,36 @@
 #!/usr/bin/env ruby
+Dir.chdir(File.dirname(__FILE__))
+
+#
+# Helpers
+#
+def bin_exist?
+  File.executable? '../bin'
+end
 
 def valgrind_exist?
   system 'hash valgrind 2>/dev/null'
 end
 
 
+#
+# Test body
+#
+
+# Compile it first when executable doesn't exist
+unless bin_exist?
+  Dir.chdir '..'
+  puts "tiny-rbtree hasn't been compiled yet, compiling..."
+  puts ''
+  puts '  $ make'
+  puts ''
+  system 'make'
+  puts ''
+  Dir.chdir 'test'
+end
+
 puts '           |  test  | memory'
 puts '-----------|--------|--------'
-
-Dir.chdir(File.dirname(__FILE__))
 
 exitcode = true
 dir = 'fixtures'
