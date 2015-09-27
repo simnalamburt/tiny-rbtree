@@ -1,5 +1,10 @@
 #!/usr/bin/env ruby
 
+def valgrind_exist?
+  system 'hash valgrind 2>/dev/null'
+end
+
+
 puts '           |  test  | memory'
 puts '-----------|--------|--------'
 
@@ -26,14 +31,20 @@ Dir.entries(dir).sort.each do |item|
   actual = `../bin < #{file} 2>/dev/null`.chomp
   test = expect == actual
 
-  `valgrind -q --leak-check=yes --log-fd=1 --error-exitcode=1 ../bin < #{file}`
-  mem = $?.success?
-
   def msg(bool)
     bool ? "\e[32m  OK  \e[0m" : "\e[31mFailed\e[0m"
   end
 
-  puts '%10s | %6s | %6s' % [item, msg(test), msg(mem)]
+  if valgrind_exist?
+    `valgrind -q --leak-check=yes --log-fd=1 --error-exitcode=1 ../bin < #{file}`
+    mem = $?.success?
+    msg_mem = msg(mem)
+  else
+    mem = false
+    msg_mem = "\e[33mNo Valgrind\e[0m"
+  end
+
+  puts '%10s | %6s | %6s' % [item, msg(test), msg_mem]
 
   exitcode &&= test && mem
 
