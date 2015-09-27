@@ -1,7 +1,6 @@
 //
 // Tiny Red-Black Tree in C
 //
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
@@ -47,6 +46,7 @@ static void destroy(node_t **root) {
   free(*root);
   *root = NULL;
 }
+
 int main(int argc, char *_[] __attribute__((unused))) {
   if (argc > 1) {
     printf(
