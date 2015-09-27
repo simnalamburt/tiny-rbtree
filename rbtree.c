@@ -26,6 +26,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 // OTHER DEALINGS IN THE SOFTWARE.
 //
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
@@ -50,16 +51,19 @@ static inline void set_data(node_t* this, data_t data) { this->_data = data; }
 static inline color_t get_color(const node_t *this) { return this == NULL ? BLACK : this->_color; }
 static inline void set_color(node_t *this, color_t color) { this->_color = color; }
 
-static void insert(node_t **root, node_t *node);
-static node_t *search(const node_t *root, data_t query);
-static node_t *best_fit(const node_t *root, data_t query);
-static void delete(node_t **root, node_t *node);
-static void traverse_inorder(node_t *root, void (*)(data_t data));
 
+//
+// Interfaces
+//
+void insert(node_t **root, node_t *node);
+node_t *search(const node_t *root, data_t query);
+node_t *best_fit(const node_t *root, data_t query);
+void delete(node_t **root, node_t *node);
+void traverse_inorder(node_t *root, void (*)(data_t data));
 
 
 //
-// Test if rbtree works fine
+// Test codes
 //
 static void per_node(data_t val) { printf("%u\n", val); }
 static void destroy(node_t **root) {
@@ -73,6 +77,7 @@ static void destroy(node_t **root) {
 }
 
 int main(int argc, char *_[] __attribute__((unused))) {
+  // Handle command line argument
   if (argc > 1) {
     printf(
         "sizeof(node_t)\n"
