@@ -22,3 +22,7 @@ valgrind --leak-check=yes ./bin < test/fixtures/delete02 1>/dev/null
 
 [travis-i]: https://travis-ci.org/simnalamburt/tiny-rbtree.svg?branch=master
 [travis-a]: https://travis-ci.org/simnalamburt/tiny-rbtree
+
+--------
+
+MIT License
