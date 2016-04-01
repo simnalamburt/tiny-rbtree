@@ -2,8 +2,7 @@ sudo: false
 language: c
 addons:
   apt:
-    packages:
-    - valgrind
+    packages: valgrind
 compiler:
   - clang
   - gcc
@@ -13,11 +12,12 @@ env:
 script:
   - make $(echo $FLAGS)
   - test/do
+
+cache: apt
+
 notifications:
   irc:
     nick: tiny-rbtree
-    channels:
-      - irc.uriirc.org:16667#hyeon
-    template:
-      - "#%{build_number} %{result}, %{build_url}"
+    channels: 'ircs://irc.uriirc.org:16664#hyeon'
+    template: '#%{build_number} %{result}, %{build_url}'
     skip_join: true
