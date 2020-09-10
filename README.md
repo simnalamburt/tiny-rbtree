@@ -1,27 +1,28 @@
-Tiny Red-Black Tree [![Build status][travis-i]][travis-a]
+Tiny Red-Black Tree [![Build status]][travis-a]
 ========
-```sh
+### Prerequisites
+- C99 compliant compiler
+- GNU Make
+- Ruby 2.0+ (just for test)
+
+### Instructions
+```bash
 make
 ./bin info
 ./bin < test/fixtures/test03
-```
 
-#### Test
-Performs both functional tests and memory checks.
-```sh
+# Testing: Performs both functional tests and memory checks
 make debug
 test/do
-```
 
-#### Debugging
-```sh
+# Debugging
 make debug
 gdb ./bin
 valgrind --leak-check=yes ./bin < test/fixtures/delete02 1>/dev/null
 ```
 
-[travis-i]: https://travis-ci.org/simnalamburt/tiny-rbtree.svg?branch=master
-[travis-a]: https://travis-ci.org/simnalamburt/tiny-rbtree
+[Build status]: https://travis-ci.com/simnalamburt/tiny-rbtree.svg?branch=master
+[travis-a]: https://travis-ci.com/simnalamburt/tiny-rbtree
 
 --------
 
