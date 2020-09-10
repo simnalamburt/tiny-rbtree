@@ -339,7 +339,8 @@ void insert_rec(node_t *n) {
     set_color(u, BLACK);
     node_t *g = grandparent(n);
     set_color(g, RED);
-    return insert_rec(g);
+    insert_rec(g);
+    return;
   }
 
   // Case 4
@@ -449,7 +450,8 @@ void delete_rec(node_t *n) {
       get_color(sibling(n)->right) == BLACK)
   {
     set_color(sibling(n), RED);
-    return delete_rec(n->parent);
+    delete_rec(n->parent);
+    return;
   }
 
   // Case 4
