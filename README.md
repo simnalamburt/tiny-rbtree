@@ -1,4 +1,4 @@
-Tiny Red-Black Tree [![Build status]][travis-a]
+Tiny Red-Black Tree
 ========
 ### Prerequisites
 - C99 compliant compiler
@@ -20,9 +20,6 @@ make debug
 gdb ./bin
 valgrind --leak-check=yes ./bin < test/fixtures/delete02 1>/dev/null
 ```
-
-[Build status]: https://travis-ci.com/simnalamburt/tiny-rbtree.svg?branch=master
-[travis-a]: https://travis-ci.com/simnalamburt/tiny-rbtree
 
 --------
 
