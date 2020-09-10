@@ -1,4 +1,4 @@
-CFLAGS = -Wall -Wextra -std=gnu89 -Werror=implicit-function-declaration
+CFLAGS = -Wall -Wextra -Wpedantic -Werror -std=c99
 
 all: rbtree.c
 	$(CC) -DNDEBUG -O3 $(CFLAGS) $^ -o bin
