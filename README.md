@@ -21,7 +21,7 @@ gdb ./bin
 valgrind --leak-check=yes ./bin < test/fixtures/delete02 1>/dev/null
 ```
 
-&nbps;
+&nbsp;
 
 --------
 *tiny-rbtree* is primarily distributed under the terms of both the [Apache
